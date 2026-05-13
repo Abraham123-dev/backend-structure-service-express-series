@@ -1,15 +1,26 @@
 const express = require('express'); //import express module
 const { time, timeStamp, log } = require('node:console');
-
+const { handleStudentMessage } = require('./controller'); //import controller function
 const app = express(); //create express app
 
 
+require('dotenv').config(); //load environment variables from .env file
+const app = require('./app'); //import app from app.js
+const PORT = process.env.PORT || 5000; //get port from environment variable or default to 5000
+
+app.listen(PORT, () => {
+    console.log(`Braudle backend test is running on port ${PORT}`);
+});
+
 // my global middleware to log every request
 app.use(express.json()); //express to understand json bodies this is also a middleware
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
 app.use(logger); //use logger middleware for all routes
 app.use(timer); //use timer middleware for all routes
 app.use(basicRateLimiter); //use rate limiter middleware for all routes
-app.use(checkAuth); //use authentication middleware for all routes
 
 //start server route
 app.get('/', (req, res) => {
@@ -151,4 +162,36 @@ function checkAuth(req, res, next) {
         next();
 }
 
-// my middleware structure    
+// middleware 5: validation data being sent to the server (simple example, not production ready)
+function validateData(req, res, next) {
+    const { name, email } = req.body;
+    const userInput = req.body;
+    const token = req.headers['authorization'];
+
+    if (!name || email === undefined) {
+        return res.status(400).json({
+            error: 'Name and email are required'
+        });
+    } 
+    
+    if (userInput.name.length < 3) {
+        return res.status(400).json({
+            error: 'Name must be at least 3 characters long'
+        });
+    }
+    return next();
+}
+
+// register route with validation middleware
+app.post('/api/register', validateData, (req, res) => {
+    const { name, email } = req.body;
+    // In real app, I save user to database here    
+    res.status(201).json({
+        message: 'User registered successfully',
+        user: { name, email }
+    });
+});
+
+//handling student message route with controller function
+app.post('/api/message', handleStudentMessage);
+
