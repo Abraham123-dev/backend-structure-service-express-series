@@ -19,6 +19,7 @@ function handleStudentMessage(req, res) {
         });
     }
 
+    //error handling
     try {
         // Business Logic: Process student message
         const processedMessage = processStudentMessage(message);
