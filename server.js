@@ -2,6 +2,7 @@ const express = require('express'); //import express module
 const { time, timeStamp, log } = require('node:console');
 const { handleStudentMessage } = require('./controller'); //import controller function
 const app = express(); //create express app
+const { errorHandler } = require('./errorhandler'); //import global error handler
 
 
 require('dotenv').config(); //load environment variables from .env file
@@ -194,4 +195,4 @@ app.post('/api/register', validateData, (req, res) => {
 
 //handling student message route with controller function
 app.post('/api/message', handleStudentMessage);
-
+app.use(errorHandler); //use global error handler middleware for all routes
