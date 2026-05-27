@@ -128,6 +128,41 @@ app.get('/api/test-crash', (req, res, next) => {
     throw new Error('This is a test crash error');
 });
 
+// test route for user model and database connection
+const User = require('./models/user.model');
+
+app.post('/api/test-user', async (req, res, next) => {
+    try {
+        const suffix = Date.now().toString();
+        const user = await User.create({
+            name: 'Abraham Oluwaniyi',
+            email: `abraham+${suffix}@gmail.com`,
+            googleId: `1234567890-${suffix}`,
+        });
+
+        res.status(201).json({
+            message: 'Test user created successfully',
+            user,
+        });
+    } catch (error) {
+        console.error('Failed to create test user:', error);
+        next(new AppError(error.message || 'Failed to create test user', 500));
+    }
+});
+
+app.get('/api/test-users', async (req, res, next) => {
+    try {
+        const users = await User.find();
+
+        res.status(200).json({
+            message: 'Test users retrieved successfully',
+            users,
+        });
+    } catch (error) {
+        next(new AppError('Failed to retrieve test users', 500));
+    }
+});
+
 app.use(errorHandler);
 
 module.exports = app;
