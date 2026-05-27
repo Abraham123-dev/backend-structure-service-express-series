@@ -1,13 +1,4 @@
-//writing a controllr that will handle the logic for the application
-
-//student sends post requst to /api/message with a body like this:
-
-//{ "message": "Hello BRAUDLE" }
-
-
-const express = require('express');
-const { logger, timer } = require('./middleware');
-const { basicRateLimiter } = require('./rateLimiter');
+// Controller that handles the student message workflow.
 
 function handleStudentMessage(req, res) {
     const { message } = req.body;
@@ -39,7 +30,7 @@ function handleStudentMessage(req, res) {
             timestamp: record.timestamp
         });
     } catch (error) {
-        logger.error(`Error processing message: ${error.message}`);
+        console.error(`Error processing message: ${error.message}`);
         return res.status(500).json({
             error: 'Failed to process message'
         });
@@ -84,7 +75,7 @@ function storeMessageRecord(message, response) {
     };
     
     // Log for audit trail
-    logger.info(`Message stored - ID: ${record.id}, Time: ${record.timestamp}`);
+    console.info(`Message stored - ID: ${record.id}, Time: ${record.timestamp}`);
     
     return record;
 }

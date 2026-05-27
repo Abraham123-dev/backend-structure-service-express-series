@@ -2,7 +2,7 @@
 
 const requestCount = {};
 
-function basicRateLimiter(maxRequests = 100, windowMs = 60000) {
+function basicRateLimiter(maxRequests = 10, windowMs = 60000) {
     return (req, res, next) => {
         const clientIp = req.ip || req.connection.remoteAddress;
         const now = Date.now();
